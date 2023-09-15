@@ -7,3 +7,13 @@ IPカメラでスライドが表示されている画面などを写し、画面
 SlideAutoShot.py IPカメラのURL color_similarity_rate pixel_rate
 ```
 color_similarity_rateとpixel_rateはオプション(未指定で10と20)
+```
+SlideAutoShot.py http://192.168.0.10:8080/video
+```
+
+# IPカメラに関して
+Android勢はIP Webcam
+↳URLはhttp://IPアドレス:8080/video
+
+ios勢はDroidCam(今のところ動作しません)
+↳URLはhttp://IPアドレス:4747/video
