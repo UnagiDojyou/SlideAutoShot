@@ -5,14 +5,16 @@ IPカメラでスライドが表示されている画面などを写し、画面
 # 使い方
 まず初めにカメラの位置をいい感じにします。下の画像くらいの感じでセットするとディフォルトの値で動作します。
 ![例](frame_8.png)
-
+コマンドの使い方はこんな感じです。
 ```
-SlideAutoShot.py IPカメラのURL color_similarity_rate pixel_rate
+python SlideAutoShot.py IPカメラのURL color_similarity_rate pixel_rate
 ```
-color_similarity_rateとpixel_rateはオプション(未指定では10と20)
+color_similarity_rateとpixel_rateはオプション(未指定では10と20)<br>
+具体的な例だと
 ```
-SlideAutoShot.py http://192.168.0.10:8080/video
+python SlideAutoShot.py http://192.168.0.10:8080/video
 ```
+(macの方はpythonではなく、python3を使ってください)
 
 # IPカメラに関して
 Android勢はIP Webcam<br>
