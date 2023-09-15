@@ -15,18 +15,10 @@ SlideAutoShot.py http://192.168.0.10:8080/video
 ```
 
 # IPカメラに関して
-<<<<<<< HEAD
-Android勢はIP Webcam
+Android勢はIP Webcam<br>
 ↳URLはhttp://IPアドレス:8080/video<br>
 画像の位置の調整やズームが簡単にできるのでおすすめです。
 
 ios勢はDroidCam(今のところ動作しません)<br>
-↳URLはhttp://IPアドレス:4747/video
+↳URLはhttp://IPアドレス:4747/video<br>
 位置調整やズームが有料なので、無課金では変数をかなり頑張らないとうまく撮れないと思います。
-=======
-Android勢はIP Webcam<br>
-↳URLはhttp://IPアドレス:8080/video
-
-ios勢はDroidCam(今のところ動作しません)<br>
-↳URLはhttp://IPアドレス:4747/video
->>>>>>> e7e664e92231f1de1242c8609052da14d520ed85
