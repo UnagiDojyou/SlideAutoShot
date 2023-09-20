@@ -4,6 +4,7 @@ import cv2
 import time
 import numpy as np
 import sys
+import datetime
 
 
 def calculate_pixel_difference(img1, img2, color_similarity_rate):
@@ -27,19 +28,22 @@ def calculate_pixel_difference(img1, img2, color_similarity_rate):
     return ratio
 
 
-def capture_from_url(url, color_similarity_rate, pixel_rate):
+def capture_from_url(url, color_similarity_rate, pixel_rate ,difftime):
     cap = cv2.VideoCapture(url)
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     counter = 0
     prev_frame = None
     initial_save = True
+    dt_old = time.time() - 6.0
 
     try:
         while True:
             ret, frame = cap.read()
+            dt_now = time.time()
+            #print([dt_now,dt_old])
 
-            if ret:
+            if (ret and dt_now - dt_old > difftime) or (ret and initial_save):
                 if prev_frame is not None:
                     diff_ratio = calculate_pixel_difference(
                         prev_frame, frame, color_similarity_rate)
@@ -49,14 +53,17 @@ def capture_from_url(url, color_similarity_rate, pixel_rate):
                         cv2.imwrite(filename, frame)
                         print(f"Saved frame as {filename}")
                         counter += 1
-                        initial_save = False
+                        if initial_save:
+                            print("First shot done.")
+                            initial_save = False
 
                 # 現在のフレームを次の比較のために保存
                 prev_frame = frame.copy()
+                dt_old = dt_now
 
-                time.sleep(1)
-            else:
+            elif dt_now - dt_old > 5:
                 print("Failed to grab frame")
+                dt_old = dt_now
                 break
     except KeyboardInterrupt:
         pass
@@ -68,19 +75,24 @@ def capture_from_url(url, color_similarity_rate, pixel_rate):
 if __name__ == "__main__":
     color_similarity_rate = 10
     pixel_rate = 20
+    difftime = 1
     args = sys.argv[1:]
-    print(len(args))
+    #print(len(args))
     if len(args) < 1:
-        print("Usage: python script_name.py <URL> (Color similarity %) (Pixel %)")
+        print("Usage: python script_name.py <URL> (time) (Color similarity %) (Pixel %)")
         sys.exit(1)
     elif len(args) == 2:
-        color_similarity_rate = float(args[1])
+        difftime = float(args[1])
     if len(args) == 3:
-        color_similarity_rate = float(args[1])
-        pixel_rate = float(args[2])
+        difftime = float(args[1])
+        color_similarity_rate = float(args[2])
+    if len(args) == 4:
+        difftime = float(args[1])
+        color_similarity_rate = float(args[2])
+        pixel_rate = float(args[3])
     url = args[0]
 
     print(f"Color similarity rate {color_similarity_rate}%")
     print(f"Pixel rate {pixel_rate}%")
     print(f"conneting to {url}")
-    capture_from_url(url, color_similarity_rate, pixel_rate)
+    capture_from_url(url, color_similarity_rate, pixel_rate ,difftime)
