@@ -6,36 +6,57 @@ import numpy as np
 import sys
 import datetime
 
+def call_diff(url, difftime, maxcount):
+    cap = cv2.VideoCapture(url)
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
-def calculate_pixel_difference(img1, img2, color_similarity_rate):
-    """ 2つの画像間のピクセルごとの色の差を計算し、変化したピクセルの割合を返す """
-    # 色の差を計算
-    diff = cv2.absdiff(img1, img2)
+    prev_frame = None
+    dt_old = time.time() - (difftime + 1)
+    sum = 0
+    count = 0
+    small = 255
 
-    # color_similarity_rate%以上の色の差があるピクセルを判定
-    threshold = color_similarity_rate * 255 / 100  # color_similarity_rate% of 255
-    significant_diff = np.greater(diff, threshold)
+    try:
+        while True:
+            ret, frame = cap.read()
+            dt_now = time.time()
 
-    # 3チャネルのブール値を合算して1チャネルに変換
-    significant_diff_single_channel = np.sum(significant_diff, axis=2) > 0
+            if ret and dt_now - dt_old > difftime:
+                if prev_frame is not None:
+                    diff_ratio = cv2.PSNR(prev_frame, frame)
+                    print(diff_ratio)
+                    sum += diff_ratio
+                    count += 1
+                    if diff_ratio < small:
+                        small = diff_ratio
+                
+                # 現在のフレームを次の比較のために保存
+                prev_frame = frame.copy()
+                dt_old = dt_now
+                if count >= maxcount:
+                    break
 
-    # 変化したピクセルの割合を計算
-    total_pixels = img1.shape[0] * img1.shape[1]  # 縦 x 横
-    changed_pixels = np.sum(significant_diff_single_channel)
-    ratio = changed_pixels / total_pixels
-    # print(ratio)
+            elif dt_now - dt_old > 5:
+                print("Failed to grab frame")
+                dt_old = dt_now
+                break
+    except KeyboardInterrupt:
+        pass
 
-    return ratio
+    cap.release()
+    print("")
+    print("Finished!")
+    print("Average:",sum/count)
+    print("Smallest",small)
 
-
-def capture_from_url(url, color_similarity_rate, pixel_rate ,difftime):
+def capture_from_url(url, psnr_val ,difftime):
     cap = cv2.VideoCapture(url)
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     counter = 0
     prev_frame = None
     initial_save = True
-    dt_old = time.time() - 6.0
+    dt_old = time.time() - (difftime + 1)
 
     try:
         while True:
@@ -45,10 +66,10 @@ def capture_from_url(url, color_similarity_rate, pixel_rate ,difftime):
 
             if (ret and dt_now - dt_old > difftime) or (ret and initial_save):
                 if prev_frame is not None:
-                    diff_ratio = calculate_pixel_difference(
-                        prev_frame, frame, color_similarity_rate)
-                    # 変化したピクセルの割合がpixel_rate%以上の場合、画像を保存
-                    if diff_ratio > (pixel_rate / 100) or initial_save:
+                    diff_ratio = cv2.PSNR(prev_frame, frame)
+                    print(diff_ratio)
+                    # 変化したピクセルの割合がpsnr_val%以上の場合、画像を保存
+                    if diff_ratio < psnr_val or initial_save:
                         filename = f"frame_{counter}.png"
                         cv2.imwrite(filename, frame)
                         print(f"Saved frame as {filename}")
@@ -71,28 +92,37 @@ def capture_from_url(url, color_similarity_rate, pixel_rate ,difftime):
     cap.release()
     print("Finished!")
 
-
 if __name__ == "__main__":
     color_similarity_rate = 10
-    pixel_rate = 20
+    psnr_val = 20
     difftime = 1
+    cal = False
+    maxcount = 60
     args = sys.argv[1:]
     #print(len(args))
-    if len(args) < 1:
-        print("Usage: python script_name.py <URL> (time) (Color similarity %) (Pixel %)")
+    if len(args) < 2:
+        print("First you must measure PSNR value")
+        print("With: python script_name.py <URL> cal (time) (max_count)")
+        print("Before you select PSNR value, you can run SlidAutoShot")
+        print("Usage: python script_name.py <URL> <PSNR_val> (time)")
         sys.exit(1)
-    elif len(args) == 2:
-        difftime = float(args[1])
-    if len(args) == 3:
-        difftime = float(args[1])
-        color_similarity_rate = float(args[2])
-    if len(args) == 4:
-        difftime = float(args[1])
-        color_similarity_rate = float(args[2])
-        pixel_rate = float(args[3])
+    if len(args) >= 2:
+        if args[1] == "cal":
+            cal = True
+        else:
+            psnr_val = float(args[1])
+    if len(args) >= 3:
+        difftime = float(args[2])
+    if len(args) >= 4:
+        maxcount = float(args[3])
     url = args[0]
 
-    print(f"Color similarity rate {color_similarity_rate}%")
-    print(f"Pixel rate {pixel_rate}%")
-    print(f"conneting to {url}")
-    capture_from_url(url, color_similarity_rate, pixel_rate ,difftime)
+    if cal:
+        print(f"conneting to {url}")
+        print(f"{difftime} second interval")
+        call_diff(url, difftime, maxcount)
+    else:
+        print(f"{difftime} second interval")
+        print(f"PSNR Value {psnr_val}%")
+        print(f"conneting to {url}")
+        capture_from_url(url, psnr_val ,difftime)

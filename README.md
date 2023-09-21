@@ -1,20 +1,25 @@
 # SlideAutoShot
 IPカメラでスライドが表示されている画面などを写し、画面が変わったら自動的に写真を撮るスクリプトです。<br>
-difftime秒ごとに画像を取得し、一枚前の画像と色がcolor_similarity_rate㌫以上変わったピクセルが全体のpixel_rate㌫存在した場合、画像を保存します。
+difftime秒ごとに画像を取得し、一枚前の画像とのPNSRがPSNR_val以下の場合、画像を保存します。<br>
+手ぶれ補正など行なっていないため、揺れることのないカメラに対して使用してください。ある程度揺れる机の場合は、独自アルゴリズムのmainブランチの方を使用してください。<br>
+PNSRは値が小さいほど類似度が低く、大きいほど類似しているものです。<br>
 
 # 使い方
-まず初めにカメラの位置をいい感じにします。下の画像くらいの感じでセットするとディフォルトの値で動作します。
-![例](README.png)
-コマンドの使い方はこんな感じです。
+(macの方はpythonではなく、python3を使ってください)<br>
+1. カメラの設置
+まず初めにカメラ(スマートフォン)の位置をいい感じにします。使うアプリは下に「IPカメラに関して」で書いてあります。<br>
+2. PNSRの値の計測
+次にPNSRの値を決定するためにサンプルを計測します。<br>
+このコマンドで1分間サンプルのPNSRの値を取得します。スライドが切り替わらないタイミングを見計らって計測してください。ctrl+Cで中断もできます。<br>
+終了すると平均PNSR値と最低値が出ます。平均値と最低値があまりにも離れている場合はカメラが揺れているため不適切です。<br>
 ```
-python SlideAutoShot.py IPカメラのURL difftime color_similarity_rate pixel_rate
+python SlideAutoShot.py IPカメラのURL cal
 ```
-difftime、color_similarity_rate、pixel_rateはオプション(未指定では1、10、20)<br>
-具体的な例だと
+3. 実行
+最低値から少し小さい値をPSNR_valとして設定します。あとはctrl+Cで終了するまでスライドが切り替わるたびに撮られるはずです。
 ```
-python SlideAutoShot.py http://192.168.0.10:8080/video
+python SlideAutoShot.py IPカメラのURL PSNR_val
 ```
-(macの方はpythonではなく、python3を使ってください)
 
 # IPカメラに関して
 Android勢はIP Webcam<br>
