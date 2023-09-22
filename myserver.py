@@ -10,7 +10,9 @@ app = Flask(__name__)
 def index():
     img_dir = '.'
     images = [f for f in os.listdir(img_dir) if f.startswith('Shot_') and f.endswith('.png')]
-    images.sort(key=lambda x: float(x.split('_')[1].split('.')[0]))  # 数字でソート
+    
+    # floatでソート
+    images.sort(key=lambda x: float(x.split('_')[1].split('.png')[0]))
     
     img_tags = []
     for img in images:
