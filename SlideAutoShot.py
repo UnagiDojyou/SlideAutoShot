@@ -5,6 +5,25 @@ import time
 import numpy as np
 import sys
 import datetime
+import glob
+import re
+
+#ファイルの最大値を見つける
+def find_max_x():
+    # カレントディレクトリの Shot_x.png ファイルを列挙
+    files = glob.glob('Shot_*.png')
+    
+    max_x = -1  # 初期値。まだファイルを見つけていないので-1を設定
+    
+    for file in files:
+        # 正規表現で x の値を抜き出す
+        match = re.match(r'Shot_(\d+).png', file)
+        if match:
+            x = int(match.group(1))  # グループ1には x の値が入っている
+            if x > max_x:
+                max_x = x  # より大きな x の値を見つけたら更新
+    
+    return max_x + 1  # 最大の x の値を返す。ファイルが一つも無い場合は0
 
 
 def calculate_pixel_difference(img1, img2, color_similarity_rate):
@@ -32,7 +51,7 @@ def capture_from_url(url, color_similarity_rate, pixel_rate ,difftime):
     cap = cv2.VideoCapture(url)
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
-    counter = 0
+    counter = find_max_x()
     prev_frame = None
     initial_save = True
     dt_old = time.time() - 6.0
@@ -49,7 +68,7 @@ def capture_from_url(url, color_similarity_rate, pixel_rate ,difftime):
                         prev_frame, frame, color_similarity_rate)
                     # 変化したピクセルの割合がpixel_rate%以上の場合、画像を保存
                     if diff_ratio > (pixel_rate / 100) or initial_save:
-                        filename = f"frame_{counter}.png"
+                        filename = f"Shot_{counter}.png"
                         cv2.imwrite(filename, frame)
                         print(f"Saved frame as {filename}")
                         counter += 1
