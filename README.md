@@ -14,8 +14,8 @@ eportlab、Pillow、opencv-pythonあたりが必要だと思います。pip inst
 まず初めにカメラの位置をいい感じにします。下の画像くらいの感じでセットするとディフォルトの値で動作します。また、カメラが揺れると誤検知してしまうため、床に置くなど工夫してください。<br>
 <img src="README.png" width="300"><br>
 2. 自動ショットの実行
-コマンドの使い方はこんな感じです。ctrl+cで終了できます。<br>
-difftime、color_similarity_rate、pixel_rate(変数の意味は一番上の項に書いてある)はオプションで未指定では1、10、20です。
+コマンドの使い方はこんな感じです。sですぐに撮影、qで終了できます。<br>
+difftime、color_similarity_rate、pixel_rate(変数の意味は一番上の項に書いてある)はオプションで未指定では1、10、10です。
 ```
 python SlideAutoShot.py IPカメラのURL difftime color_similarity_rate pixel_rate
 ```
