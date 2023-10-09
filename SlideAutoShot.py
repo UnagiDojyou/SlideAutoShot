@@ -9,6 +9,8 @@ import glob
 import re
 import threading
 import keyboard
+import platform
+import os
 
 save_flag = False
 quit_flag = False
@@ -51,6 +53,17 @@ def calculate_pixel_difference(img1, img2, color_similarity_rate):
     # print(ratio)
 
     return ratio
+
+
+def check_keyboard():
+    system_name = platform.system()
+
+    if system_name == "Linux" or system_name == "Darwin":
+        return os.geteuid() == 0
+    elif system_name == "Windows":
+        return True
+    else:
+        return False
 
 
 # キーを監視(sが押されたら撮る、qが押されたら終了する)
@@ -140,6 +153,9 @@ if __name__ == "__main__":
     print(f"Color similarity rate {color_similarity_rate}%")
     print(f"Pixel rate {pixel_rate}%")
     print(f"conneting to {url}")
-    input_thread = threading.Thread(target=check_for_s_key)
-    input_thread.start()
+    if check_keyboard():
+        input_thread = threading.Thread(target=check_for_s_key)
+        input_thread.start()
+    else:
+        print("if you want to use keyboard to shot with 's',you have to run with sudo.")
     capture_from_url(url, color_similarity_rate, pixel_rate, difftime)
