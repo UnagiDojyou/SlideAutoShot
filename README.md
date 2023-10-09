@@ -9,7 +9,7 @@ macの方はpythonではなく、python3を使ってください<br>
 
 # 使い方
 0. ライブラリのインストール
-eportlab、Pillow、opencv-python、keyboardあたりが必要だと思います。pip installで入れてください。他にも必要なのがあるかもしれません。エラーを見て適宜インストールしてください<br>
+eportlab、Pillow、opencv-python、keyboard、flaskあたりが必要だと思います。pip installで入れてください。他にも必要なのがあるかもしれません。エラーを見て適宜インストールしてください<br>
 1. カメラの設置
 まず初めにカメラの位置をいい感じにします。下の画像くらいの感じでセットするとディフォルトの値で動作します。また、カメラが揺れると誤検知してしまうため、床に置くなど工夫してください。<br>
 <img src="README.png" width="300"><br>
