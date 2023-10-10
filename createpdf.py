@@ -4,6 +4,7 @@ import sys
 import shutil
 from reportlab.pdfgen import canvas
 from PIL import Image
+from collections import Counter
 
 
 def get_float_from_filename(filename):
@@ -12,12 +13,57 @@ def get_float_from_filename(filename):
     return float(match.group(1)) if match else None
 
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python script.py output_file.pdf")
-        sys.exit(1)
+def get_most_common_resolution():
+    # カレントディレクトリ内のファイルを取得
+    files = os.listdir()
 
-    output_pdf_file = sys.argv[1]
+    # Shot_x.png (xはfloat) のパターンをコンパイル
+    pattern = re.compile(r'Shot_([\d.]+)\.png')
+
+    resolutions = []
+
+    # 各ファイルに対して
+    for file in files:
+
+        if pattern.match(file):
+            # print(file)
+            with Image.open(file) as img:
+                resolutions.append(img.size)
+                # print(img.size)
+
+    # 最も一般的な解像度を取得
+    if resolutions:
+        most_common_resolution = Counter(resolutions).most_common(1)[0][0]
+        return most_common_resolution
+    else:
+        return None
+
+
+def change_resolution(target_width):
+    # カレントディレクトリ内のファイルを取得
+    files = os.listdir()
+
+    # Shot_x.png (xはfloat) のパターンをコンパイル
+    pattern = re.compile(r'Shot_([\d.]+)\.png')
+
+    # 各ファイルに対して
+    for file in files:
+        if pattern.match(file):
+            with Image.open(file) as img:
+                # 与えられた横方向の解像度と異なる場合
+                if img.width != target_width:
+                    # 縦横比を維持しつつリサイズ
+                    new_height = int(target_width * (img.height / img.width))
+                    img_resized = img.resize(
+                        (target_width, new_height), Image.LANCZOS)
+
+                    # ファイルを上書き保存
+                    img_resized.save(file)
+                    print(f"Resize {file}")
+
+
+def makepdf(output_pdf_file):
+
     output_directory = os.path.splitext(output_pdf_file)[0]
 
     # Get list of Shot_x.png files in the current directory
@@ -56,4 +102,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: python script.py output_file.pdf")
+        sys.exit(1)
+    output_pdf_file = sys.argv[1]
+
+    resolution = get_most_common_resolution()
+    change_resolution(resolution[0])
+    makepdf(output_pdf_file)
