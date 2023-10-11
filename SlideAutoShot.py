@@ -1,5 +1,6 @@
 # Made by Ungi Dojyou
 # unagidojyou.com
+import select
 import cv2
 import time
 import numpy as np
@@ -8,7 +9,6 @@ import datetime
 import glob
 import re
 import threading
-import keyboard
 import platform
 import os
 
@@ -55,30 +55,36 @@ def calculate_pixel_difference(img1, img2, color_similarity_rate):
     return ratio
 
 
-def check_keyboard():
-    system_name = platform.system()
+def get_input_unix():
+    import tty
+    import termios
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
 
-    if system_name == "Linux" or system_name == "Darwin":
-        return os.geteuid() == 0
-    elif system_name == "Windows":
-        return True
-    else:
-        return False
 
-
-# キーを監視(sが押されたら撮る、qが押されたら終了する)
 def check_for_s_key():
     global save_flag
     global quit_flag
     print("Press 's' to save a frame or 'q' to quit.")
     while True:
-        if keyboard.is_pressed('s'):
+        if os.name == 'nt':  # Windows
+            import msvcrt
+            if msvcrt.kbhit():
+                key = msvcrt.getch().decode('utf-8')
+        else:  # macOS, Linux
+            key = get_input_unix()
+
+        if key == 's':
             save_flag = True
-            time.sleep(0.5)  # 過剰な反応を避けるための遅延
-        elif keyboard.is_pressed('q'):
+        elif key == 'q':
             quit_flag = True
             break
-        time.sleep(0.01)
 
 
 def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
@@ -153,9 +159,6 @@ if __name__ == "__main__":
     print(f"Color similarity rate {color_similarity_rate}%")
     print(f"Pixel rate {pixel_rate}%")
     print(f"conneting to {url}")
-    if check_keyboard():
-        input_thread = threading.Thread(target=check_for_s_key)
-        input_thread.start()
-    else:
-        print("if you want to use keyboard to shot with 's',you have to run with sudo.")
+    input_thread = threading.Thread(target=check_for_s_key)
+    input_thread.start()
     capture_from_url(url, color_similarity_rate, pixel_rate, difftime)

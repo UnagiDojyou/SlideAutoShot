@@ -9,14 +9,12 @@ macの方はpythonではなく、python3を使ってください<br>
 
 # 使い方
 0. ライブラリのインストール
-eportlab、Pillow、opencv-python、keyboard、flask、canvas、reportlabあたりが必要だと思います。pip installで入れてください。他にも必要なのがあるかもしれません。エラーを見て適宜インストールしてください<br>
+eportlab、Pillow、opencv-python、flask、canvas、reportlabあたりが必要だと思います。pip installで入れてください。他にも必要なのがあるかもしれません。エラーを見て適宜インストールしてください<br>
 1. カメラの設置
 まず初めにカメラの位置をいい感じにします。下の画像くらいの感じでセットするとディフォルトの値で動作します。また、カメラが揺れると誤検知してしまうため、床に置くなど工夫してください。<br>
 <img src="README.png" width="300"><br>
 2. 自動ショットの実行
-コマンドの使い方はこんな感じです。<br>
-sですぐに撮影、qで終了できますが、Linux・MACではroot権限が必要なのでsudoをつけて実行してください。<br>
-特にMACの場合は、README3.pngのように設定→プライバシーとセキュリティ→アクセシビリティから実行するコンソールをONにしてください。<br>
+コマンドの使い方はこんな感じです。sですぐに撮影、qで終了できます。<br>
 difftime、color_similarity_rate、pixel_rate(変数の意味は一番上の項に書いてある)はオプションで未指定では1、10、10です。
 ```
 python SlideAutoShot.py IPカメラのURL difftime color_similarity_rate pixel_rate

@@ -6,14 +6,16 @@ import base64
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     img_dir = '.'
-    images = [f for f in os.listdir(img_dir) if f.startswith('Shot_') and f.endswith('.png')]
-    
+    images = [f for f in os.listdir(img_dir) if f.startswith(
+        'Shot_') and f.endswith('.png')]
+
     # floatでソート
     images.sort(key=lambda x: float(x.split('_')[1].split('.png')[0]))
-    
+
     img_tags = []
     for img in images:
         thumb_io = BytesIO()
@@ -27,12 +29,16 @@ def index():
             f'<a href=\"{img_path}\"><img src=\"data:image/png;base64,{base64.b64encode(thumb_io.read()).decode("utf-8")}\"></a>'
             f'<br><span>{img}</span></div>'
         )
-    
-    return f"<!doctype html><html><body>{''.join(img_tags)}</body></html>"
+
+    footer = '<div style="margin-top: 20px; text-align: center;">made by UnagiDojyou</div>'
+
+    return f"<!doctype html><html><body>{''.join(img_tags)}{footer}</body></html>"
+
 
 @app.route('/<img_name>')
 def serve_image(img_name):
     return send_file(img_name)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)
