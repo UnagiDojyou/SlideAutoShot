@@ -1,15 +1,12 @@
 # Made by Ungi Dojyou
 # unagidojyou.com
-import select
 import cv2
 import time
 import numpy as np
 import sys
-import datetime
 import glob
 import re
 import threading
-import platform
 import os
 
 save_flag = False
@@ -56,8 +53,7 @@ def calculate_pixel_difference(img1, img2, color_similarity_rate):
 
 
 def get_input_unix():
-    import tty
-    import termios
+    import tty, termios
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
@@ -77,6 +73,7 @@ def check_for_s_key():
         import msvcrt
     print("Press 's' to save a frame or 'q' to quit.")
     while True:
+        time.sleep(0.1)
         if win:  # Windows
             #import msvcrt
             if msvcrt.kbhit():
@@ -117,10 +114,14 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
                     # 変化したピクセルの割合がpixel_rate%以上の場合、画像を保存
                     if diff_ratio > (pixel_rate / 100) or initial_save or save_flag:
                         filename = f"Shot_{counter}.png"
-                        cv2.imwrite(filename, frame)
-                        print(f"Saved frame as {filename}")
                         counter += 1
+                        cv2.imwrite(filename, frame)
+                        sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
+                        sys.stdout.flush()
+                        print(f"Saved frame as {filename}")
                         if initial_save:
+                            sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
+                            sys.stdout.flush()
                             print("First shot done.")
                             initial_save = False
                         if save_flag:
@@ -136,7 +137,9 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
                 dt_old = dt_now
                 break
             elif quit_flag:
-                print("'q' key input")
+                sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
+                sys.stdout.flush()
+                print("'q' key input.")
                 break
     except KeyboardInterrupt:
         pass
