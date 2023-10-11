@@ -71,20 +71,28 @@ def get_input_unix():
 def check_for_s_key():
     global save_flag
     global quit_flag
+    win = False
+    if os.name == 'nt':  # Windows
+        win = True
+        import msvcrt
     print("Press 's' to save a frame or 'q' to quit.")
     while True:
-        if os.name == 'nt':  # Windows
-            import msvcrt
+        if win:  # Windows
+            #import msvcrt
             if msvcrt.kbhit():
                 key = msvcrt.getch().decode('utf-8')
+                if key == 's':
+                    save_flag = True
+                elif key == 'q':
+                    quit_flag = True
+                    break
         else:  # macOS, Linux
             key = get_input_unix()
-
-        if key == 's':
-            save_flag = True
-        elif key == 'q':
-            quit_flag = True
-            break
+            if key == 's':
+                save_flag = True
+            elif key == 'q':
+                quit_flag = True
+                break
 
 
 def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
