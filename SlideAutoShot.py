@@ -135,7 +135,7 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
             elif dt_now - dt_old > 5:
                 print("Failed to grab frame")
                 dt_old = dt_now
-                break
+                time.sleep(5)
             elif quit_flag:
                 sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
                 sys.stdout.flush()
