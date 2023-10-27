@@ -18,7 +18,7 @@ def find_max_x():
     # カレントディレクトリの Shot_x.png ファイルを列挙
     files = glob.glob('Shot_*.png')
 
-    max_x = -1  # 初期値。まだファイルを見つけていないので-1を設定
+    max_x = 0  # 初期値。まだファイルを見つけていないので0を設定
 
     for file in files:
         # 正規表現で x の値を抜き出す
@@ -133,6 +133,8 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
                 dt_old = dt_now
 
             elif dt_now - dt_old > 5:
+                sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
+                sys.stdout.flush()
                 print("Failed to grab frame")
                 dt_old = dt_now
                 time.sleep(5)
