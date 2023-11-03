@@ -30,7 +30,7 @@ def index():
             f'<br><span>{img}</span></div>'
         )
 
-    footer = '<div style="margin-top: 20px; text-align: center;">made by UnagiDojyou</div>'
+    footer = '<div style="margin-top: 20px; text-align: center;"><a href= https://github.com/UnagiDojyou/SlideAutoShot target="_blank" >SlideAutoShot</a> made by <a href= https://unagidojyou.com target="_blank" >UnagiDojyou</a></div>'
 
     return f"<!doctype html><html><body>{''.join(img_tags)}{footer}</body></html>"
 

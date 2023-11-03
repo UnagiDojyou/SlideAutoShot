@@ -8,6 +8,7 @@ import glob
 import re
 import threading
 import os
+from plyer import notification
 
 save_flag = False
 quit_flag = False
@@ -119,12 +120,15 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
                         sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
                         sys.stdout.flush()
                         print(f"Saved frame as {filename}")
+                        notification.notify(title="Shot Done!",message=filename,app_name="SlideAutoShot",timeout=3) #通知
                         if initial_save:
                             sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
                             sys.stdout.flush()
                             print("First shot done.")
                             initial_save = False
                         if save_flag:
+                            sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
+                            sys.stdout.flush()
                             print("Saved due to 's' key input.")
                             save_flag = False
 
@@ -136,6 +140,7 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
                 sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
                 sys.stdout.flush()
                 print("Failed to grab frame")
+                notification.notify(title="Failed to grab frame!",message="network Error or URL is worng",app_name="SlideAutoShot",timeout=3)
                 dt_old = dt_now
                 time.sleep(5)
             elif quit_flag:
