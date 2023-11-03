@@ -143,6 +143,9 @@ def capture_from_url(url, color_similarity_rate, pixel_rate, difftime):
                 notification.notify(title="Failed to grab frame!",message="network Error or URL is worng",app_name="SlideAutoShot",timeout=3)
                 dt_old = dt_now
                 time.sleep(5)
+                print("try to conect...")
+                cap = cv2.VideoCapture(url)
+                cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
             elif quit_flag:
                 sys.stdout.write('\r')  # 追加: カーソルを行の先頭に移動
                 sys.stdout.flush()
